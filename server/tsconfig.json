@@ -1,0 +1,22 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "watch": true,
+        "target": "es6",
+        "module": "commonjs",
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "baseUrl": ".",
+        "experimentalDecorators": true,
+        "paths": {
+            "IModels": ["interfaces"],
+            "IMongooseModels": ["mongoose.interfaces"]
+        }
+    },
+    "exclude": [
+        "node_modules"
+    ],
+    "include": [
+        "./**/*.ts"     
+    ]
+}
