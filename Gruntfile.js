@@ -15,7 +15,7 @@ module.exports = function (grunt) {
 					"./client/**/"
 				],
 				livereload: {
-					enabled: false,
+					enabled: true,
 					extensions: ['pug', 'ts']
 				}
 			},
@@ -24,10 +24,10 @@ module.exports = function (grunt) {
 			},
 			ts: function(filepath) {
 				if (filepath.indexOf("server") === 0) {
-					return ["exec:tsc"];
+					return ["exec:tscServer"];
 				}
 				else {
-					return ["webpack:client"];
+					return ["exec:tscClient", "browserify:compile"];
 				}
 			}
 		},

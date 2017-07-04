@@ -2,7 +2,6 @@ import * as $ from "jquery";
 
 class Auth {
     constructor() {
-
     }
 }
 

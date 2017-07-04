@@ -12,16 +12,17 @@ export abstract class BaseSocket {
     ) {
         this.namespace = myIO.of(name);
         this.namespace.on("connection", socket => {
-            console.log(`joined: ${name}`);
+            console.log(`Joined Namespace: ${name}`);
             this.onJoin(socket);
         });
+        console.log(`Created Namespacke: ${name}`);
     }
 
     private onJoin(socket:SocketIO.Socket) {
         socket.on("join", (room:string) => {
             socket.leaveAll();
             socket.join(room);
-            socket.emit("message", `on channel: ${this.name.toUpperCase()}, joined room: ${room}`);
+            socket.emit("message", `${this.name.toUpperCase()}, joined room: ${room}`);
             this.getInitialState(room)
             .then(data => this.onAddOrChange(room, data))
         });
