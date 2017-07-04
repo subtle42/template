@@ -1,4 +1,5 @@
 import * as $ from "jquery";
+import * as io from "socket.io-client";
 
 class Auth {
     constructor() {
@@ -19,7 +20,7 @@ abstract class BaseSocketService {
     }
 
     get(id:string):any {
-        return this.list.forEach(x => x._id === id)[0];
+        return this.list.filter(x => x._id === id)[0];
     }
 
     getAll():any[] {
@@ -63,6 +64,6 @@ class BookService extends BaseSocketService {
 
 $(document).ready(() =>{
     let service = new BookService();
-    service.joinRoom("danielISCOOL");
+    service.joinRoom("asdf");
 });
 
