@@ -18,9 +18,10 @@
     "@types/node": "^7.0.12",
     "@types/passport": "^0.3.3",
     "@types/passport-local": "^1.0.29",
+    "@types/request": "0.0.45",
     "@types/socket.io": "^1.4.29",
     "@types/socket.io-client": "^1.4.29",
-    "@types/request": "0.0.45"
+    "grunt-contrib-clean": "^1.1.0"
   },
   "dependencies": {
     "body-parser": "^1.17.1",

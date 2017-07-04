@@ -31,6 +31,10 @@ module.exports = function (grunt) {
 				}
 			}
 		},
+		clean: {
+			client: ["./client/**/*.js", "./client/**/*.map"],
+			server: ["./server/**/*.js", "./server/**/*.map"]
+		},
 		browserify: {
 			compile: {
 				files: {
@@ -48,6 +52,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-browserify');
 	grunt.loadNpmTasks('grunt-contrib-pug');
 	grunt.loadNpmTasks('grunt-este-watch');
+	grunt.loadNpmTasks('grunt-contrib-clean');
 
 	grunt.registerTask("tsc", ["pug", "exec:tscServer", "exec:tscClient", "browserify:compile", "esteWatch"]);
 };
