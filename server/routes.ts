@@ -4,7 +4,7 @@ import * as path from "path";
 import * as express from "express";
 
 export default (app:express.Application) => {
-    app.use(express.static(".tmp"));
+    app.use(express.static("../.tmp"));
     app.use("/api/auth", require("./auth"))
     app.use("/api/things", require("./api/thing"));
     app.use("/api/books", require("./api/book"));
