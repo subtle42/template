@@ -1,20 +1,11 @@
-const webpackConfig = require("./webpack.config");
-
 module.exports = function (grunt) {
 	grunt.initConfig({
-		outDir: "artifacts",
+		outDir: ".tmp",
 		pug: {
 			compile: {
 				files: {
 					"<%=outDir%>/index.html": ["client/**/*.pug"]
 				}
-			}
-		},
-		express: {
-			options: {
-				script: "./server/app.js"
-			},
-			dev: {
 			}
 		},
 		esteWatch: {
@@ -34,28 +25,29 @@ module.exports = function (grunt) {
 			ts: function(filepath) {
 				if (filepath.indexOf("server") === 0) {
 					return ["exec:tsc"];
-					// return  ["express:dev:stop", "webpack:server", "express:dev"]
 				}
 				else {
 					return ["webpack:client"];
 				}
 			}
 		},
-		exec: {
-			tsc: 'npm run tsc'
+		browserify: {
+			compile: {
+				files: {
+					"<%=outDir%>/app.js": ["client/**/*.js"]
+				}
+			}
 		},
-		webpack: {
-			server: Object.assign({}, webpackConfig.server),
-			client: Object.assign({}, webpackConfig.client)
+		exec: {
+			tscClient: 'npm run tsc-client',
+			tscServer: 'npm run tsc-server'
 		}
 	});
 
 	grunt.loadNpmTasks('grunt-exec');
+	grunt.loadNpmTasks('grunt-browserify');
 	grunt.loadNpmTasks('grunt-contrib-pug');
-	grunt.loadNpmTasks('grunt-express-server');
 	grunt.loadNpmTasks('grunt-este-watch');
-	grunt.loadNpmTasks('grunt-webpack');
 
-	grunt.registerTask("tsc", ["pug", "exec:tsc", "webpack:client", "esteWatch"]);
-	grunt.registerTask("serve", ["pug", "webpack:server", "webpack:client",  "express:dev", "esteWatch"]);
+	grunt.registerTask("tsc", ["pug", "exec:tscServer", "exec:tscClient", "browserify:compile", "esteWatch"]);
 };
