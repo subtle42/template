@@ -1,4 +1,6 @@
-server/**/*.js
 node_modules/
+server/**/*.js
+client/**/*.js
 .tmp/
 *.map
+*.html
