@@ -1,9 +1,7 @@
 import Book from "./book.model";
 import * as express from "express";
-import {Util} from "../utils";
-import BookSocket from "./book.socket";
-
-let Socket = new BookSocket();
+import Util from "../utils";
+import "./book.socket";
 
 export default class BookController {
     public static create(req:express.Request, res:express.Response):void {
@@ -16,7 +14,7 @@ export default class BookController {
         .then(() => Book.create(myBook))
         .then(Util.handleNoResult(res))
         .then(Util.handleResponse(res))
-        .then(book => Socket.onAddOrChange(req.user._id, [book]))
+        // .then(book => Socket.onAddOrChange(req.user._id, [book]))
         .catch(Util.handleError(res));
     }
 
@@ -29,7 +27,7 @@ export default class BookController {
         .then(pass => Book.findByIdAndUpdate(myId, myBook))
         .then(Util.handleNoResult(res))
         .then(Util.handleResponseNoData(res))
-        .then(book => Socket.onAddOrChange(req.user._id, [book]))
+        // .then(book => Socket.onAddOrChange(req.user._id, [book]))
         .catch(Util.handleError(res));
     }
 
@@ -38,7 +36,7 @@ export default class BookController {
 
         Book.findByIdAndRemove(myId)
         .then(() => res.json())
-        .then(() => Socket.onDelete(req.user._id, [myId]))
+        // .then(() => Socket.onDelete(req.user._id, [myId]))
         .catch(Util.handleError(res));
     }
 

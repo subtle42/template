@@ -1,24 +1,7 @@
 import * as express from "express";
-import * as io from "socket.io";
-
 import Page from "./page.model";
-import {Util} from "../utils";
-
-
-
-// let myIO:SocketIO.Namespace = io.("/pages")
-
-// myIO.on("connection", (socket) => {
-//     let id = socket.handshake.query("id");
-//     let room:SocketIO.Socket = socket.join(id)
-
-//     Page.find({
-//         bookId:id
-//     })
-//     .then(pages => {
-//         socket.broadcast.to(socket.id).emit("onConnect", pages);
-//     });
-// });
+import Util from "../utils";
+import "./page.socket";
 
 export class PageController {
     public static create(req:express.Request, res:express.Response):void {
@@ -31,7 +14,6 @@ export class PageController {
         myPage.validate()
         .then(() => Page.create(myPage))
         .then(Util.handleNoResult(res))
-        // .then(page => myIO.in(req.body.bookId).emit("add", page))
         .then(Util.handleResponse(res))
         .catch(Util.handleError(res));
     }
@@ -45,7 +27,6 @@ export class PageController {
         .then(() => Page.findByIdAndUpdate(myId, req.body))
         .then(Util.handleNoResult(res))
         .then(Util.handleResponseNoData(res))
-        // .then(() => myIO.in(myPage.bookId).emit("update", myPage))
         .catch(Util.handleError(res));
     }
 

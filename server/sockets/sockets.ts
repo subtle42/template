@@ -1,22 +1,40 @@
 import * as IO from "socket.io";
 import * as http from "http";
+import * as m from "mongoose";
 
 declare var global:any;
 let myIO:SocketIO.Server = global.myIO;
 
-export abstract class BaseSocket {
+export default abstract class BaseSocket {
     protected namespace:SocketIO.Namespace;    
 
     constructor (
-        private name:string
+        private name:string,
+        private model:m.Model<any>
     ) {
         this.namespace = myIO.of(name);
         this.namespace.on("connection", socket => {
             console.log(`Joined Namespace: ${name}`);
             this.onJoin(socket);
         });
-        console.log(`Created Namespacke: ${name}`);
+        console.log(`Created Namespace: ${name}`);
+
+        this.model.schema.post("save", (err, doc) => {
+            console.error("err", err);
+            console.log("doc", doc);
+            this.onAddOrChange(this.getParentId(doc), [doc]);
+        });
+
+        this.model.schema.post("remove", (err, doc) => {
+            console.error("err", err);
+            console.log("doc", doc);
+            this.onDelete(this.getParentId(doc), [doc._id]);
+        });
     }
+
+    abstract getParentId(model:m.Document):string
+    
+    abstract getInitialState(room:string):Promise<any[]>
 
     private onJoin(socket:SocketIO.Socket) {
         socket.on("join", (room:string) => {
@@ -32,11 +50,8 @@ export abstract class BaseSocket {
         this.namespace.in(room).emit("delete", ids);
     }
 
-    onAddOrChange(room:string, items:any[]):void {
+    onAddOrChange(room:string, items:m.Document[]):void {
         this.namespace.in(room).emit("addedOrChanged", items);
     }
 
-    getInitialState(room:string):Promise<any[]> {
-        throw "Not implemented"
-    }
 }

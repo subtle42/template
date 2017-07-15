@@ -1,17 +1,18 @@
-import Book from "./book.model";
+import Page from "./page.model";
+import {IMongooseModels} from "IMongooseModels";
 import BaseSocket from "../../sockets/sockets";
 
-class BookSocket extends BaseSocket {
+class PageSocket extends BaseSocket {
     constructor() {
-        super("books", Book);
+        super("pages", Page);
     }
 
-    getParentId(model) {
-        return "";
+    getParentId(model:IMongooseModels.IPageModel) {
+        return model.bookId;
     }
 
     getInitialState(userId:string) {
-        return Book.find({
+        return Page.find({
             $or: [{
                 owner: userId
             }, {
@@ -23,4 +24,4 @@ class BookSocket extends BaseSocket {
     }
 }
 
-new BookSocket();
+new PageSocket();

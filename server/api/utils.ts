@@ -2,7 +2,7 @@
 
 import * as express from "express";
 
-export class Util {
+export default class Util {
     public static handleError = (res:express.Response, statusCode?:number):any => {
         statusCode = statusCode || 500;
         return (err) => {

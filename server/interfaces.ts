@@ -47,6 +47,7 @@ export module IModels {
     }
 
     export interface IBook extends IShare {
+        _id:any;
         title:string;
         active:boolean;
         pages:Array<string>;
