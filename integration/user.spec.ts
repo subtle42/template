@@ -71,10 +71,9 @@ describe("User API", () => {
                     }
                 }, (err, res, body) => {
                     expect(res.statusCode).toEqual(200);
-                    let users:Array<any> = body;
+                    let users:Array<any> = JSON.parse(body);
                     users.forEach((user, index) => {
                         expect(USER_LIST.indexOf(user.name)).not.toEqual(-1);
-                        console.log("works");
                     });
                     done();
                 });
