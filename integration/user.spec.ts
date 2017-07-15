@@ -15,15 +15,25 @@ describe("User API", () => {
         email: "dantheman@test.com"
     };
 
-    beforeEach((done) => {
-        var myDb = new Db("meantest", new Server("localhost", 27017));
-        myDb.open()
-        .then(db => db.collection("users"))
-        .then(collection => collection.remove({}))
-        .then(docs =>myDb.close())
+    beforeEach(done => {
+        deleteAllUsers()
         .then(() => done())
         .catch(err => console.error(err));
     });
+
+    afterEach(done => {
+        deleteAllUsers()
+        .then(() => done())
+        .catch(err => console.error(err));
+    });
+
+    let deleteAllUsers = () => {
+        var myDb = new Db("meantest", new Server("localhost", 27017));
+        return myDb.open()
+        .then(db => db.collection("users"))
+        .then(collection => collection.remove({}))
+        .then(docs =>myDb.close());
+    }
 
     let createUser = (name:string) => {
         return new Promise(resolve => {
@@ -41,26 +51,24 @@ describe("User API", () => {
         });
     }
 
-    afterEach(() => {});
-
     describe("get list of all users", () => {
-        it("should return 403 if not logged in", (done) => {
+        it("should return 403 if not logged in", done => {
             done();
         });
-        it("should return 403 if not logged in as ADMIN", (done) => {
+        it("should return 403 if not logged in as ADMIN", done => {
             done();
         });
     });
 
     describe("get public list of users", () => {
-        it("should return 403 if not logged in", (done) => {
+        it("should return 403 if not logged in", done => {
             request.get(`${BASE_URL}/public`, (err, res, body) => {
                 expect(res.statusCode).toEqual(403);
                 done();
             });
         });
 
-        it("should return a list of all users in the system", (done) => {
+        it("should return a list of all users in the system", done => {
             const USER_LIST = ["test1", "test2", "test3"];
             
             Promise.all(USER_LIST.map(name => createUser(name)))
@@ -82,22 +90,22 @@ describe("User API", () => {
     });
 
     describe("delete user", () => {
-        it("should return 403 if not logged in", (done) => {
+        it("should return 403 if not logged in", done => {
             done();
         });
-        it("cannot delete user if role is not 'admin'", (done) => {done();})
-        it("can delete another user if role is 'admin'", (done) => {done();})
+        it("cannot delete user if role is not 'admin'", done => {done();})
+        it("can delete another user if role is 'admin'", done => {done();})
     });
 
     describe("get currently logged in user", () => {
-        it("should return 403 if not logged in", (done) => {
+        it("should return 403 if not logged in", done => {
             request.get(`${BASE_URL}/me`, (err, res, body) => {
                 expect(res.statusCode).toEqual(403);
                 done();;
             })
         });
 
-        it("should return the current user's profile", (done) => {
+        it("should return the current user's profile", done => {
             const NAME = "meTest";
             createUser(NAME)
             .then(token => {
@@ -117,7 +125,7 @@ describe("User API", () => {
     });
 
     describe("create user", () => {
-        it(`should return a token with the role of '${DEFAULT_ROLE}'`, (done) => {
+        it(`should return a token with the role of '${DEFAULT_ROLE}'`, done => {
             request.post(BASE_URL, {
                 form: myUser
             },
