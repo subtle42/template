@@ -1,23 +1,47 @@
 import {} from "jasmine";
 import * as request from "request";
-
+import * as jwt from "jsonwebtoken";
+import User from "../server/api/user/user.model";
+import {Db, Server} from "mongodb";
+import * as config from "../server/config/environment/shared";
 
 describe("User API", () => {
-    const baseUrl = "http://localhost:3000/api/users";
+    const BASE_URL = "http://localhost:3000/api/users";
+    const SECRET_KEY = config.shared.secret.session;
+    const DEFAULT_ROLE = "user";
+    let myUser = {
+        password: "dantheman",
+        name: "dantheman",
+        email: "dantheman@test.com"
+    };
 
-    beforeEach(() => {
-        console.log("in beforeEach");
+    beforeEach((done) => {
+        var myDb = new Db("meantest", new Server("localhost", 27017));
+        myDb.open()
+        .then(db => db.collection("users"))
+        .then(collection => collection.remove({}))
+        .then(docs =>myDb.close())
+        .then(() => done())
+        .catch(err => console.error(err));
     });
 
+    let createUser = (name:string) => {
+        return new Promise(resolve => {
+            request.post(BASE_URL, {
+                form: {
+                    name: name,
+                    password: name,
+                    email: `${name}@test.com`
+                }
+            },
+            (err, res, body) => {
+                let token = JSON.parse(res.body).token;
+                resolve(token);
+            });
+        });
+    }
+
     afterEach(() => {});
-    
-// router.get("/", auth.isAuthenticated, auth.isAdmin, controller.index);
-// router.get("/public", auth.isAuthenticated, controller.getPublic);
-// router.delete("/:id", auth.isAuthenticated, auth.isAdmin, controller.destroy);
-// router.get("/me", auth.isAuthenticated, controller.me);
-// router.put("/:id/password", auth.isAuthenticated, controller.changePassword);
-// router.get("id", auth.isAuthenticated, controller.show);
-// router.post("/", controller.create);
 
     describe("get list of all users", () => {
         it("should return 403 if not logged in", (done) => {
@@ -30,40 +54,82 @@ describe("User API", () => {
 
     describe("get public list of users", () => {
         it("should return 403 if not logged in", (done) => {
-            done();            
-        })
+            request.get(`${BASE_URL}/public`, (err, res, body) => {
+                expect(res.statusCode).toEqual(403);
+                done();
+            });
+        });
+
         it("should return a list of all users in the system", (done) => {
-            done();
-        })
+            const USER_LIST = ["test1", "test2", "test3"];
+            
+            Promise.all(USER_LIST.map(name => createUser(name)))
+            .then(tokens => {
+                request.get(`${BASE_URL}/public`, {
+                    headers: {
+                        "x-access-token": tokens[0]
+                    }
+                }, (err, res, body) => {
+                    expect(res.statusCode).toEqual(200);
+                    let users:Array<any> = body;
+                    users.forEach((user, index) => {
+                        expect(USER_LIST.indexOf(user.name)).not.toEqual(-1);
+                        console.log("works");
+                    });
+                    done();
+                });
+            });
+        });
     });
 
     describe("delete user", () => {
-        it("should return 403 if not logged in", (done) => {done();})
-        it("should return 403 if not logged in as ADMIN", (done) => {done();})
-        it("should delete the record from USERS", (done) => {done();})
+        it("should return 403 if not logged in", (done) => {
+            done();
+        });
+        it("cannot delete user if role is not 'admin'", (done) => {done();})
+        it("can delete another user if role is 'admin'", (done) => {done();})
     });
 
-    describe("GET /me", () => {
-        it("should return 403 if not logged in", (done) => {done();})
-        it("should return the current user's profile", (done) => {done();})
+    describe("get currently logged in user", () => {
+        it("should return 403 if not logged in", (done) => {
+            request.get(`${BASE_URL}/me`, (err, res, body) => {
+                expect(res.statusCode).toEqual(403);
+                done();;
+            })
+        });
+
+        it("should return the current user's profile", (done) => {
+            const NAME = "meTest";
+            createUser(NAME)
+            .then(token => {
+                request.get(`${BASE_URL}/me`, {
+                    headers: {
+                        "x-access-token": token
+                    }
+                },
+                (err, res, body) => {
+                    body = JSON.parse(body);
+                    expect(res.statusCode).toEqual(200);
+                    expect(body.name).toEqual(NAME);
+                    done();
+                });
+            })
+        });
     });
 
     describe("create user", () => {
-        it("should return a token", (done) => {
-            let body = {
-                password: "test",
-                name: "test",
-                email: "test@test.com"
-            };
-
-            request.post(baseUrl, {
-                form: body
+        it(`should return a token with the role of '${DEFAULT_ROLE}'`, (done) => {
+            request.post(BASE_URL, {
+                form: myUser
             },
             (err, res, body) => {
-                console.log(err);
-                console.log(res.statusCode);
-                console.log(res.body);
-                done();
+                expect(res.statusCode).toEqual(200);
+                let token = JSON.parse(res.body).token;
+                jwt.verify(token, SECRET_KEY, (err, decoded) => {
+                    if (err) expect("Bad Token").toEqual(token);
+                    expect(decoded.role).toEqual(DEFAULT_ROLE)
+                    done();
+                });
             })
         });
     });

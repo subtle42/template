@@ -8,9 +8,6 @@ export class UserController {
     public static getPublic(req:express.Request, res:express.Response):void {
         var userIdList = req.body;
         User.find({
-            _id: {
-                $in: userIdList
-            }
         })
         .then(users => res.json(users))
         .catch(err => res.status(500).json(err));
@@ -37,12 +34,15 @@ export class UserController {
             return newUser.save();
         })
         .then(user => {
-            var token = jwt.sign(JSON.stringify({_id: user._id}), config.shared.secret.session, {
+            let tmp = { _id: user._id, role: user.role };
+            let token =  jwt.sign(tmp, config.shared.secret.session, {
                 expiresIn: 60 * 60 * 5
             });
             res.json({token});
         })
-        .catch(err => res.status(422).json(err));
+        .catch(err => {
+            res.status(422).json(err)
+        });
     }
 
     public static show(req:express.Request, res:express.Response, next:express.NextFunction):void {

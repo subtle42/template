@@ -1,6 +1,9 @@
 {
     "extends": "../tsconfig",
     "compilerOptions": {
+        "lib": [
+            "es6"
+        ],
         "target": "es6"
     },
     "exclude": [
