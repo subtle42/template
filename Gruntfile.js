@@ -12,7 +12,8 @@ module.exports = function (grunt) {
 			options: {
 				dirs: [
 					"./server/**/",
-					"./client/**/"
+					"./client/**/",
+					"./integration/"
 				],
 				livereload: {
 					enabled: true,
@@ -26,6 +27,9 @@ module.exports = function (grunt) {
 				if (filepath.indexOf("server") === 0) {
 					return ["exec:tscServer"];
 				}
+				else if (filepath.indexOf("integration") === 0) {
+					return ["exec:tscIntegration", "exec:runIntegrationTests"];
+				}
 				else {
 					return ["exec:tscClient", "browserify:compile"];
 				}
@@ -33,7 +37,8 @@ module.exports = function (grunt) {
 		},
 		clean: {
 			client: ["./client/**/*.js", "./client/**/*.map"],
-			server: ["./server/**/*.js", "./server/**/*.map"]
+			server: ["./server/**/*.js", "./server/**/*.map"],
+			integration: ["./integration/**/*.js", "./integration/**/*.map"]
 		},
 		browserify: {
 			compile: {
@@ -44,7 +49,9 @@ module.exports = function (grunt) {
 		},
 		exec: {
 			tscClient: 'npm run tsc-client',
-			tscServer: 'npm run tsc-server'
+			tscServer: 'npm run tsc-server',
+			tscIntegration: 'npm run tsc-integration',
+			runIntegrationTests: 'npm run server-test --force'
 		}
 	});
 
@@ -54,5 +61,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-este-watch');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 
+
 	grunt.registerTask("tsc", ["pug", "exec:tscServer", "exec:tscClient", "browserify:compile", "esteWatch"]);
+	grunt.registerTask("test-dev", ["exec:tscIntegration", "exec:runIntegrationTests", "esteWatch"]);
 };

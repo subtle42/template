@@ -1,6 +1,7 @@
 node_modules/
 server/**/*.js
 client/**/*.js
+integration/**/*.js
 .tmp/
 *.map
 *.html
