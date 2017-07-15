@@ -5,7 +5,9 @@ import * as io from "socket.io";
 
 var mongoUri = "mongodb://localhost/meantest";
 
-mongoose.createConnection(mongoUri);
+(<any>mongoose).connect(mongoUri, {
+    useMongoClient: true
+});
 (<any>mongoose).Promise = global.Promise;
 mongoose.connection.on("error", () => {
     console.error("MongoDB connection error!");
