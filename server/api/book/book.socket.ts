@@ -1,9 +1,10 @@
 import Book from "./book.model";
+import {Schema} from "mongoose";
 import BaseSocket from "../../sockets/sockets";
 
-class BookSocket extends BaseSocket {
-    constructor() {
-        super("books", Book);
+export default class BookSocket extends BaseSocket {
+    constructor(schema:Schema) {
+        super("books", schema);
     }
 
     getParentId(model) {
@@ -21,6 +22,4 @@ class BookSocket extends BaseSocket {
             }]
         }).exec();
     }
-}
-
-new BookSocket();
+};

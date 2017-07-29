@@ -1,6 +1,6 @@
 import * as IO from "socket.io";
 import * as http from "http";
-import * as m from "mongoose";
+import {Document, Schema} from "mongoose";
 
 declare var global:any;
 let myIO:SocketIO.Server = global.myIO;
@@ -10,7 +10,7 @@ export default abstract class BaseSocket {
 
     constructor (
         private name:string,
-        private model:m.Model<any>
+        private schema:Schema
     ) {
         this.namespace = myIO.of(name);
         this.namespace.on("connection", socket => {
@@ -19,20 +19,19 @@ export default abstract class BaseSocket {
         });
         console.log(`Created Namespace: ${name}`);
 
-        this.model.schema.post("save", (err, doc) => {
-            console.error("err", err);
+        this.schema.post("save", (doc:Document) => {
             console.log("doc", doc);
             this.onAddOrChange(this.getParentId(doc), [doc]);
         });
 
-        this.model.schema.post("remove", (err, doc) => {
+        this.schema.post("remove", (err, doc) => {
             console.error("err", err);
             console.log("doc", doc);
             this.onDelete(this.getParentId(doc), [doc._id]);
         });
     }
 
-    abstract getParentId(model:m.Document):string
+    abstract getParentId(model:Document):string
     
     abstract getInitialState(room:string):Promise<any[]>
 
