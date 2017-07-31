@@ -49,7 +49,7 @@ export default abstract class BaseSocket {
         this.namespace.in(room).emit("delete", ids);
     }
 
-    onAddOrChange(room:string, items:m.Document[]):void {
+    onAddOrChange(room:string, items:Document[]):void {
         this.namespace.in(room).emit("addedOrChanged", items);
     }
 
