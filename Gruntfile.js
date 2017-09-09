@@ -47,21 +47,50 @@ module.exports = function (grunt) {
 				}
 			}
 		},
+		mocha: {
+			all: {
+				src: ['.tmp/testrunner.html']
+			},
+			options: {
+				run: true
+			}
+		},
+		injector: {
+			options: {
+				prefix: ".."
+			},
+			tests: {
+				files: {
+					".tmp/testrunner.html": ['server/**/*.spec.js']
+				}
+			}
+		},
 		exec: {
 			tscClient: 'npm run tsc-client',
 			tscServer: 'npm run tsc-server',
 			tscIntegration: 'npm run tsc-integration',
 			runIntegrationTests: 'npm run server-test --force'
+		},
+		copy: {
+			testrunner: {
+				files: [{
+					src: "testrunner.html",
+					dest: ".tmp/testrunner.html"
+				}]
+			}
 		}
 	});
 
+	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-exec');
 	grunt.loadNpmTasks('grunt-browserify');
 	grunt.loadNpmTasks('grunt-contrib-pug');
 	grunt.loadNpmTasks('grunt-este-watch');
 	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-mocha');
+	grunt.loadNpmTasks('grunt-injector');
 
-
+	grunt.registerTask("test", ["copy", "injector", "mocha"])
 	grunt.registerTask("tsc", ["pug", "exec:tscServer", "exec:tscClient", "browserify:compile", "esteWatch"]);
 	grunt.registerTask("test-dev", ["exec:tscIntegration", "exec:runIntegrationTests", "esteWatch"]);
 };

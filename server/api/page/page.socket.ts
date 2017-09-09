@@ -1,10 +1,11 @@
 import Page from "./page.model";
+import {Schema} from "mongoose";
 import {IMongooseModels} from "IMongooseModels";
 import BaseSocket from "../../sockets/sockets";
 
 class PageSocket extends BaseSocket {
-    constructor() {
-        super("pages", Page);
+    constructor(page:Schema) {
+        super("pages", page);
     }
 
     getParentId(model:IMongooseModels.IPageModel) {
@@ -23,5 +24,3 @@ class PageSocket extends BaseSocket {
         }).exec();
     }
 }
-
-new PageSocket();
