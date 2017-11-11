@@ -13,12 +13,13 @@
     "paths": {
       "IModels": ["./server/interfaces"],
       "IMongooseModels": ["./server/mongoose.interfaces"]
-    }
+    },
+    "jsx": "react"
   },
   "exclude": [
   ],
   "include": [
-    "server/**/*.ts",
-    "client/**/*.ts"
+    "server/**/*",
+    "client/**/*"
   ]
 }
