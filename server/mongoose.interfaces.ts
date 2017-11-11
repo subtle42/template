@@ -15,4 +15,6 @@ export module IMongooseModels {
     export interface IBookModel extends IModels.IBook, Document {}
 
     export interface IPageModel extends IModels.IPage, Document {}
+
+    export interface IWidgetModel extends IModels.IWidget, Document {}
 }

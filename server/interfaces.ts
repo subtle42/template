@@ -59,4 +59,11 @@ export module IModels {
         bookId:string;
         widgets:Array<string>;
     }
+
+    export interface IWidget {
+        groups:any[];
+        series:any[];
+        pageId:string;
+        sourceId:string;
+    }
 }
